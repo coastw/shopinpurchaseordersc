@@ -225,7 +225,8 @@ public class MainFrame extends javax.swing.JFrame {
         // 生成需要上传的excel文件
         jTextArea1.setText("");
         ResultMSG resultMSG = Controler.merge(jTextField1.getText(), jTextField2.getText(), jTextField3.getText());
-        jTextArea1.append(resultMSG.getReadMessage() + "\n" + resultMSG.getWriteMessage());
+        jTextArea1.append(resultMSG.getReadMessage() + "\n" + resultMSG.getWriteMessage()
+        + "\n" + resultMSG.getErrorMessage());
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

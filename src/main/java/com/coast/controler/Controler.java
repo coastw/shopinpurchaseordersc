@@ -29,6 +29,7 @@ public class Controler {
 
     public static ResultMSG merge(String sapFile, String exportFile, String mergedFilePath) {
         ResultMSG resultMSG = new ResultMSG();
+        resultMSG.setErrorMessage("");
         try {
             ArrayList<Product> products;
             //要导入到模板的SAP文件
@@ -63,11 +64,15 @@ public class Controler {
             while (iter.hasNext()) {
                 Product product = iter.next();
                 ProductToSAPUtil sapUtil = new ProductToSAPUtil(product);
+                
+                //测试
+                if(product.getSnCode().equals("K630207E00")){
+                    System.out.println("error:" + product);
+                }
                 String fullSize = product.getSize() + "(" + sapUtil.getInternationalSize() + ")";
-                int thatRowNum = getRowNum(sheet, product.getSnCode(), product.getColor(), fullSize);
+                int thatRowNum = getRowNum(sheet, product.getSnCode(), product.getColorCode(), fullSize);
                 if (thatRowNum == 0) {
-                    System.out.println("没有找到对应的SAP！sn=" + product.getSnCode()+ " color=" + product.getColor() + " size=" + fullSize + " amount=" + product.getAmount());
-                    String notFoundMsg = "没有找到对应的SAP！sn=" + product.getSnCode() + " color=" + product.getColor() + " size=" + fullSize + " amount=" + product.getAmount() + "\n";
+                    String notFoundMsg = "没有找到对应的SAP！sn=" + product.getSnCode() + " color=" + product.getColorCode() + " size=" + fullSize + " amount=" + product.getAmount() + "\n";
                     resultMSG.setErrorMessage(resultMSG.getErrorMessage()+notFoundMsg);
                 } else {
                     sheet.getRow(thatRowNum).createCell(6).setCellValue((int) product.getAmount());
@@ -117,6 +122,8 @@ public class Controler {
                 String sizeCode = fullSn.substring(len - 1, len);
 //                String sizeRegex = convertSizeToRegex(sizeCode);
 
+                
+                
                 //type
                 Cell typeCell = sheet.getRow(row).getCell(1);
                 String type = poiUtil.getCellContentToString(typeCell);
@@ -167,7 +174,7 @@ public class Controler {
      * @return
      * @throws Exception 
      */
-    public static int getRowNum(Sheet sheet, String sn, String color, String size) throws Exception {
+    public static int getRowNum(Sheet sheet, String sn, String colorCode, String size) throws Exception {
         int lastRowNum = sheet.getLastRowNum();//excell中左后一行显示为lastRowNum+1;
         int rowNum = lastRowNum;
         while (rowNum > 0) {
@@ -179,7 +186,7 @@ public class Controler {
             String targetColor = poiUtil.getCellContentToString(colorCell);
             String targetSize = poiUtil.getCellContentToString(sizeCell);
             if (targetSn.equals(sn)
-                    && targetColor.equals(color)
+                    && targetColor.equals(colorCode)
                     && targetSize.equals(size)) {
                 System.out.println("Find! snCell:"+ snCell.toString());
                 return rowNum;
